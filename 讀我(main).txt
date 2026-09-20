@@ -31,7 +31,7 @@ proj_gpu(main)
 ║    ╚═══ (2_🛢️_SQL_Query.py) --- 🛢️ 第三頁：放 SQL 資料庫互動
 ║
 ╠═══ src/
-║    ╚═══ proj_gpu/
+║    ╚═══ proj_hf/
 ║         ╠═══ __pycache__/       --- 垃圾暫存檔，無視
 ║         ╠═══ __init__.py        --- 初始檔，無視
 ║         ╠═══ (db_connect_db.py) --- 連接db用的程式
