@@ -9,9 +9,20 @@
 *****************************************
 """
 
-import streamlit as st
-from proj_gpu.templates import base_template, footer_template, page_layout
+import sys
+from pathlib import Path
 
+import streamlit as st
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+SRC_DIR = PROJECT_ROOT / "src"
+
+for candidate in (PROJECT_ROOT, SRC_DIR):
+    candidate_str = str(candidate)
+    if candidate_str not in sys.path:
+        sys.path.insert(0, candidate_str)
+
+from proj_hf.templates import base_template, footer_template, page_layout
 
 
 # 🚀 1. 套用基礎樣板，並自訂該頁標題
