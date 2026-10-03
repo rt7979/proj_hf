@@ -6,71 +6,67 @@ proj_gpu 架構圖
 
 
 
-GitHub proj_gpu
-║
-╠═══ main  -- 專案主要內容、程式碼
-║
-╚═══ web   -- 展示網頁
-
-
-
-proj_gpu(main)
-║
-╠═══ .streamlit/
-║    ╠═══ config.toml  --- # ⚙️ 告訴 Streamlit 啟用靜態資料夾功能（非常重要！）。
-║    ╚═══ secrets.toml --- # 🔏 SQL 資料庫帳號、密碼、連線位置、連接埠、資料庫名稱。
-║
-╠═══ .venv
-║
-╠═══ docs/
-║    ╠═══ README_dev.md --- 開發步驟教學
-║    ╚═══ streamlit介紹.txt --- streamlit語法
-║
-╠═══ pages/
-║    ╠═══ (1_📊_Dashboard.py) --- 📈 第二頁：放 Power BI 或數據圖表，()代表未設，1_代表順序，實際上會隱藏前面
-║    ╚═══ (2_🛢️_SQL_Query.py) --- 🛢️ 第三頁：放 SQL 資料庫互動
-║
-╠═══ src/
-║    ╚═══ proj_hf/
-║         ╠═══ __pycache__/       --- 垃圾暫存檔，無視
-║         ╠═══ __init__.py        --- 初始檔，無視
-║         ╠═══ (db_connect_db.py) --- 連接db用的程式
-║         ╠═══ (db_query.py)      --- select語法的程式
-║         ╠═══ clear.py           --- 清除螢幕的魔法
-║         ╚═══ templates.py       --- 🎨 專門放你的網頁公共樣板（如頁首、頁尾）
-║
-╠═══ static/
-║    ╠═══ css/
-║    ║    ╚═══ style.css   --- css檔案(應該用不到)
-║    ║
-║    ╠═══ images/
-║    ║    ╚═══ (image.jpg) --- 各式圖片檔位置
-║    ║
-║    ╚═══ js/
-║         ╚═══ (script.js) --- javascript檔案(應該用不到)
-║
-╠═══ .gitignore      --- 不要上傳的東西
-╠═══ .python-version --- python版本
-╠═══ 讀我(main).txt  --- 架構圖
-╠═══ app.py          --- 🏠 真正的首頁 / 網站大門
-╠═══ pyproject.toml  --- uv設定檔、安裝了什麼套件
-╠═══ README.md
-╚═══ uv.lock         --- 安裝streamlit會自動產生的檔案
-
-
-
-proj_gpu(web)
-║
-╠═══ main.html
-║
-╚═══ 讀我(web).txt
-
-
-
-
-
-╔═══╦═══╗
-║   ║   ║
-╠═══╬═══╣
-║   ║   ║
-╚═══╩═══╝
+proj_hf/
+├─ .streamlit/
+│  ├─ config.toml  --- # ⚙️ 告訴 Streamlit 啟用靜態資料夾功能（非常重要！）。
+│  └─ (secrets.toml) --- # 🔏 SQL 資料庫帳號、密碼、連線位置、連接埠、資料庫名稱。
+│
+├─ .venv/
+│
+├─ data/
+│  ├─ origin_csv/ --- # 📁 大數據來源，檔案太大所以沒上傳。
+│  ├─ 1_dim_author.csv
+│  ├─ 2_dim_pipeline_tag.csv
+│  ├─ 3_dim_library.csv
+│  ├─ 4_dim_model_table.csv
+│  ├─ 6_fact_snapshot.csv
+│  ├─ 7_fact_model_totals.csv
+│  └─ 9_dim_date.csv
+│
+├─ docs/ --- # 📁 一些文件，沒上傳。
+│
+├─ src/
+│  └─ proj_hf/
+│     ├─ clear/ --- # 🛀 資料清洗的程式。
+│     │  ├─ 1_1_dim_author_table.py
+│     │  ├─ 1_2_fix_parser_author_type.py
+│     │  ├─ 2_dim_pipeline_tag_table.py
+│     │  ├─ 3_dim_library_table.py
+│     │  ├─ 4_1_dim_model_table.py
+│     │  ├─ 4_2_fix_get_time.py
+│     │  ├─ 4_3_fix_parser_params.py
+│     │  ├─ 4_4_fix_parser_params_api.py
+│     │  ├─ 4_5_fix_vram.py
+│     │  ├─ 5_gpu_table.PY
+│     │  ├─ 6_fact_snapshot_table .py
+│     │  ├─ 6_zfix_modified_download.py
+│     │  ├─ 7_last_modified_table.py
+│     │  ├─ 99_check.py
+│     │  └─ 9_dim_date.py
+│     │
+│     ├─ __init__.py    --- # 初始檔，無視
+│     ├─ __pycache__    --- # 🗑️ 垃圾暫存檔，無視
+│     ├─ clear.py       --- # 🖥️ 清除螢幕的魔法
+│     ├─ get_root.py    --- # 🎋 絕對能找到專案路徑(root)的小函數
+│     ├─ (db_connect_db.py) --- # 連接db用的程式
+│     ├─ (db_query.py)      --- # select語法的程式
+│     └─ templates.py   --- # 🎨 專門放你的網頁公共樣板（如頁首、頁尾）
+│
+├─ static/
+│  ├─ css/          --- # css檔案位置(應該用不到)
+│  │  └─ style.css
+│  │
+│  ├─ images/       --- # 各式圖片檔位置
+│  │  ├─ 1001.jpg
+│  │  └─ 177.jpg
+│  │
+│  └─ js/           --- # javascript檔案位置(應該用不到)
+│     └─ script.js
+│
+├─ .gitignore       --- # 🚫 設定禁止上傳到github的資料夾或檔案
+├─ .python-version  --- # 🧬 python版本
+├─ 讀我(main).txt   --- # 方便顯示目前專案分支，還有架構圖
+├─ app.py           --- # 🏠 真正的首頁 / 網站大門
+├─ pyproject.toml   --- # 🔧 uv設定檔、安裝了什麼套件，使用uv sync可以快速恢復裝過的插件
+├─ README.md        --- # 🗺️ 架構圖， <----- 在這 ----->
+└─  uv.lock         --- # 安裝streamlit會自動產生的檔案
