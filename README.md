@@ -4,7 +4,7 @@
 proj_hf/
 ├─ .streamlit/
 │  ├─ config.toml  --- # ⚙️ 告訴 Streamlit 啟用靜態資料夾功能（非常重要！）。
-│  └─ (secrets.toml) --- # 🔏 SQL 資料庫帳號、密碼、連線位置、連接埠、資料庫名稱。
+│  └─ secrets.toml --- # 🔏 SQL 資料庫帳號、密碼、連線位置、連接埠、資料庫名稱。
 │
 ├─ .venv/
 │
@@ -22,22 +22,8 @@ proj_hf/
 │
 ├─ src/
 │  └─ proj_hf/
-│     ├─ clear/ --- # 🛀 資料清洗的程式。
-│     │  ├─ 1_1_dim_author_table.py
-│     │  ├─ 1_2_fix_parser_author_type.py
-│     │  ├─ 2_dim_pipeline_tag_table.py
-│     │  ├─ 3_dim_library_table.py
-│     │  ├─ 4_1_dim_model_table.py
-│     │  ├─ 4_2_fix_get_time.py
-│     │  ├─ 4_3_fix_parser_params.py
-│     │  ├─ 4_4_fix_parser_params_api.py
-│     │  ├─ 4_5_fix_vram.py
-│     │  ├─ 5_gpu_table.PY
-│     │  ├─ 6_fact_snapshot_table .py
-│     │  ├─ 6_zfix_modified_download.py
-│     │  ├─ 7_last_modified_table.py
-│     │  ├─ 99_check.py
-│     │  └─ 9_dim_date.py
+│     ├─ clear/ --- # 🛀 資料清洗的程式放置區。
+│     ├─ connect_db/ --- # 🔗 連接db的程式放置區。
 │     │
 │     ├─ __init__.py    --- # 初始檔，無視
 │     ├─ __pycache__    --- # 🗑️ 垃圾暫存檔，無視
@@ -49,14 +35,8 @@ proj_hf/
 │
 ├─ static/
 │  ├─ css/          --- # css檔案位置(應該用不到)
-│  │  └─ style.css
-│  │
 │  ├─ images/       --- # 各式圖片檔位置
-│  │  ├─ 1001.jpg
-│  │  └─ 177.jpg
-│  │
 │  └─ js/           --- # javascript檔案位置(應該用不到)
-│     └─ script.js
 │
 ├─ .gitignore       --- # 🚫 設定禁止上傳到github的資料夾或檔案
 ├─ .python-version  --- # 🧬 python版本
