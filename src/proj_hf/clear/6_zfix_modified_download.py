@@ -83,24 +83,10 @@ def modified_download(snap_path):
         snapshot_df.at[first_idx, 'daily_actual_dls'] = int(first_rolling)
         first_day_locked_rows += 1
         
-        # 2. 📊 計算後續天數的統計分配分母
-        # 後續天數的總滾動量
-        other_total_rolling = model_rows['rolling_30d_dls'].iloc[1:].sum()
-        # 錨點：最後一天的滾動量
-        final_rolling = model_rows['rolling_30d_dls'].iloc[-1]
-        
-        if other_total_rolling == 0:
-            # 防呆：如果後續完全沒下載量，直接填 1 保底
-            snapshot_df.loc[other_idxs, 'daily_actual_dls'] = 1
-            calculated_rows += len(other_idxs)
-        else:
-            # 統計分配公式：(當天滾動 / 後續總滾動) * 最後一天滾動
-            estimated_values = (model_rows['rolling_30d_dls'].iloc[1:] / other_total_rolling) * final_rolling
-            
-            # 四捨五入轉整數，並強制限制最小值為 1（保底絕對不為 0）
-            final_daily_values = estimated_values.round().astype(int).clip(lower=1)
-            snapshot_df.loc[other_idxs, 'daily_actual_dls'] = final_daily_values
-            calculated_rows += len(other_idxs)
+        # 2. 📊 後續天數的每日下載量 = 30 天滾動下載量 / 30，四捨五入取整數
+        other_rolling = model_rows['rolling_30d_dls'].iloc[1:]
+        snapshot_df.loc[other_idxs, 'daily_actual_dls'] = np.floor(other_rolling / 30 + 0.5).astype(int)
+        calculated_rows += len(other_idxs)
 
     # 移除輔助用時間欄位
     snapshot_df = snapshot_df.drop(columns=['_snapshot_date'])
@@ -130,8 +116,8 @@ if __name__ == "__main__":
     clear() # 螢幕清除魔法
     root = get_root()  # 取得 D:\proj\proj_hf
 
-    # 1. 直接處理原始快照檔，並覆寫同一份 6_dim_snapshot.csv
-    snap_path = root / 'data' / '6_dim_snapshot.csv'
+    # 1. 直接處理原始快照檔，並覆寫同一份 6_fact_snapshot.csv
+    snap_path = root / 'data' / '6_fact_snapshot.csv'
 
     # 2. 呼叫函數並把路徑傳進去
     modified_download(snap_path)

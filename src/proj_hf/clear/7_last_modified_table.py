@@ -105,8 +105,8 @@ if __name__ == "__main__":
     root = get_root()  # 取得 D:\proj\proj_hf
     
     # 1. 設定原始檔案與輸出檔案的完整路徑
-    mod_path = root / 'data' / '4_dim_model.csv'
-    sap_path = root / 'data' / '6_dim_snapshot.csv'
+    mod_path = root / 'data' / '4_dim_model_table.csv'
+    sap_path = root / 'data' / '6_fact_snapshot.csv'
     out_path = root / 'data' / '7_fact_model_totals.csv'
 
 
