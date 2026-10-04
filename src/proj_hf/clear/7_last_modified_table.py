@@ -57,7 +57,21 @@ def create_last_modified_table(mod_path, sap_path, out_path):
         print("⚠️ 警告：snapshot_date 含有無法解析的日期，未輸出資料。")
         return
 
+    model_dates = {}
+    for column in ('created_at', 'last_modified'):
+        parsed_dates = pd.to_datetime(mod_df[column], format='mixed', errors='coerce')
+        invalid_dates = mod_df[column].notna() & parsed_dates.isna()
+        if invalid_dates.any():
+            print(f"⚠️ 警告：{column} 含有無法解析的日期，未輸出資料。")
+            return
+        model_dates[column] = parsed_dates.dt.strftime('%Y-%m-%d')
+
+    mod_df = mod_df.copy()
+    for column, formatted_dates in model_dates.items():
+        mod_df[column] = formatted_dates
+
     modified_df = sap_df[required_snapshot_cols].copy()
+    modified_df['snapshot_date'] = snapshot_dates.dt.strftime('%Y-%m-%d')
     modified_df['_snapshot_date'] = snapshot_dates
     modified_df = (
         modified_df

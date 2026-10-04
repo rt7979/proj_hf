@@ -2,16 +2,13 @@
 ************************************
 
 程式六：修改download
-採用統計學「比率分配縮放法」，保證首筆維持不變且全站無不切實際的 0
-首筆資料維持不變，後續資料依照統計學按比例縮放，保證全站無不切實際的 0
+首筆資料維持不變，後續資料依據 30 天滾動下載量差分推算每日下載量
 
 ************************************
 """
 import pandas as pd
-import numpy as np
 from proj_hf.clear import clear
 from proj_hf.get_root import get_root
-from pathlib import Path
 
 
 def read_csv(path_in):
@@ -25,7 +22,7 @@ def read_csv(path_in):
 
 def modified_download(snap_path):
     """
-    將 30 天滾動下載量換算為每日下載量，並直接覆寫原始 6_snapshot.csv。
+    以 30 天滾動量差分推算每日下載量，並直接覆寫原始快照 CSV。
     """
 
     snap_df = read_csv(snap_path)
@@ -62,12 +59,12 @@ def modified_download(snap_path):
     calculated_rows = 0
     first_day_locked_rows = 0
 
-    # 依模型分組進行統計學按比例縮放
-    for model_id, model_rows in snapshot_df.sort_values(
+    # 依模型和日期排序，以滾動量差分反推每日下載量
+    for _, model_rows in snapshot_df.sort_values(
         ['model_id', '_snapshot_date'], kind='stable'
     ).groupby('model_id', sort=False):
         
-        # 如果該模型在日誌中只有 1 筆快照，直接讓日下載量 = 滾動下載量
+        # 單筆模型的首筆每日下載量維持原始滾動量
         if len(model_rows) == 1:
             idx = model_rows.index[0]
             snapshot_df.at[idx, 'daily_actual_dls'] = int(model_rows['rolling_30d_dls'].iloc[0])
@@ -76,17 +73,30 @@ def modified_download(snap_path):
 
         # 區分「第一天」與「其他後續天數」
         first_idx = model_rows.index[0]
-        other_idxs = model_rows.index[1:]
         
-        # 1. 🔒 第一筆強制維持不變 (如 8/21 的 421918)
-        first_rolling = model_rows['rolling_30d_dls'].iloc[0]
-        snapshot_df.at[first_idx, 'daily_actual_dls'] = int(first_rolling)
+        # 第一筆強制維持不變，作為後續差分推算的基準
+        first_rolling = int(model_rows['rolling_30d_dls'].iloc[0])
+        first_date = model_rows['_snapshot_date'].iloc[0]
+        snapshot_df.at[first_idx, 'daily_actual_dls'] = first_rolling
         first_day_locked_rows += 1
-        
-        # 2. 📊 後續天數的每日下載量 = 30 天滾動下載量 / 30，四捨五入取整數
-        other_rolling = model_rows['rolling_30d_dls'].iloc[1:]
-        snapshot_df.loc[other_idxs, 'daily_actual_dls'] = np.floor(other_rolling / 30 + 0.5).astype(int)
-        calculated_rows += len(other_idxs)
+
+        daily_by_date = {first_date: first_rolling}
+        previous_rolling = first_rolling
+        for idx, row in model_rows.iloc[1:].iterrows():
+            current_date = row['_snapshot_date']
+            current_rolling = int(row['rolling_30d_dls'])
+            thirty_days_ago_daily = daily_by_date.get(
+                current_date - pd.Timedelta(days=30),
+                0
+            )
+            daily_downloads = max(
+                0,
+                current_rolling - previous_rolling + thirty_days_ago_daily
+            )
+            snapshot_df.at[idx, 'daily_actual_dls'] = daily_downloads
+            daily_by_date[current_date] = daily_downloads
+            previous_rolling = current_rolling
+            calculated_rows += 1
 
     # 移除輔助用時間欄位
     snapshot_df = snapshot_df.drop(columns=['_snapshot_date'])
@@ -101,12 +111,12 @@ def modified_download(snap_path):
     print("🎉 [快照資料表] 建立成功！")
     print(f"📁 檔案已儲存為：{snap_path}")
     print(f"📊 總共成功建立了 {len(snapshot_df)} 筆快照資料。")
-    print(f"📈 第一天鎖定不變：{first_day_locked_rows} 筆；其餘統計學按比例縮放：{calculated_rows} 筆。")
+    print(f"📈 第一筆鎖定不變：{first_day_locked_rows} 筆；其餘按 30 天滾動差分推算：{calculated_rows} 筆。")
     
     # 檢查是否有任何未預期的負數或 0 外流
     zero_count = (snapshot_df['daily_actual_dls'] == 0).sum()
     negative_check = (snapshot_df['daily_actual_dls'] < 0).sum()
-    print(f"🛡️ 安全檢查：發現 {zero_count} 筆 0，{negative_check} 筆負數資料（指標：必須均為 0 筆）。")
+    print(f"🛡️ 安全檢查：發現 {zero_count} 筆 0，{negative_check} 筆負數資料（負數必須為 0 筆）。")
     
     print("\n👀 產出的資料前 5 筆範例（第 1 筆完全保留）：")
     print(snapshot_df.head())
