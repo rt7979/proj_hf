@@ -125,7 +125,7 @@ if __name__ == "__main__":
     cat_path = root / 'data' / '2_dim_pipeline_tag.csv'
     lib_path = root / 'data' / '3_dim_library.csv'
     mod_path = root / 'data' / '4_dim_model.csv'
-    out_path = root / 'data' / '6_dim_snapshot.csv'
+    out_path = root / 'data' / '6_fact_snapshot.csv'
     
     # 2. 呼叫函數並把路徑傳進去
     create_snapshot_table(raw_path, au_path, cat_path, lib_path, mod_path, out_path)
