@@ -26,7 +26,7 @@ def add_modified_table(totals_path, model_path, out_path):
     if totals_df is None or model_df is None:
         return
 
-    required_totals_cols = ['model_id', 'total_likes', 'totle_dls']
+    required_totals_cols = ['model_id', 'total_likes', 'total_dls']
     required_model_cols = ['model_id']
     missing_totals_cols = [col for col in required_totals_cols if col not in totals_df.columns]
     missing_model_cols = [col for col in required_model_cols if col not in model_df.columns]
@@ -46,7 +46,7 @@ def add_modified_table(totals_path, model_path, out_path):
         print("⚠️ 警告：model_id 有重複值，無法保證一對一合併，未輸出資料。")
         return
 
-    metric_cols = ['total_likes', 'totle_dls']
+    metric_cols = ['total_likes', 'total_dls']
     model_df = model_df.drop(columns=metric_cols, errors='ignore')
     modified_df = model_df.merge(
         totals_df[['model_id', *metric_cols]],
