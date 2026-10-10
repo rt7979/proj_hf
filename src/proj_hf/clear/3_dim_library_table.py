@@ -44,7 +44,7 @@ def create_library_table(input_path, out_path):
         )
         
         # 4. 依排序後的順序，自動生成主鍵 lib_id，格式為 lib001、lib002...
-        library_df.insert(0, 'lib_id', [f'lib{idx:03d}' for idx in range(1, len(library_df) + 1)])
+        library_df.insert(0, 'library_id', [f'lib{idx:03d}' for idx in range(1, len(library_df) + 1)])
         
         # 【核心修正 3】改用參數傳進來的 out_path 儲存檔案，不再寫死
         library_df.to_csv(out_path, index=False, encoding='utf-8-sig')

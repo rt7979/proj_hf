@@ -1,4 +1,4 @@
-﻿lib_id,library_name,library_type,base_framework
+﻿library_id,library_name,library_type,base_framework
 lib001,audio.cpp,custom,gguf
 lib002,audiobox_aesthetics,custom,PyTorch
 lib003,AutoGluon,public,AutoGluon
